@@ -1,4 +1,10 @@
 import streamlit as st
+
+# L'application vérifie la mémoire globale :
+if "est_abonne_global" not in st.session_state or not st.session_state.est_abonne_global:
+    st.warning("🔒 Veuillez vous connecter sur la page d'accueil.")
+    st.stop()  # Si pas payé, le code s'arrête net ici !
+import streamlit as st
 import streamlit.components.v1 as components
 from groq import Groq
 
