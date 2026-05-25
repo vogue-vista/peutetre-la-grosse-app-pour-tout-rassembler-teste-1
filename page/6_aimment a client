@@ -1,0 +1,169 @@
+import streamlit as st
+import streamlit.components.v1 as components
+from groq import Groq
+
+# -------------------------
+# CONFIGURATION DE LA PAGE
+# -------------------------
+st.set_page_config(page_title="LinkedBoost Pro", page_icon="🚀", layout="wide")
+
+# Design épuré et suppression de la sidebar
+st.markdown("""
+<style>
+[data-testid="stSidebar"] {display: none !important;}
+[data-testid="stSidebarNav"] {display: none !important;}
+@import url('https://googleapis.com');
+html, body, div, p, h1, h2, h3, h4, h5, h6, span {
+    font-family: 'Poppins', sans-serif !important;
+}
+</style>
+""", unsafe_allow_html=True)
+
+# -------------------------
+# CONFIGURATION PAYPAL
+# -------------------------
+PAYPAL_CLIENT_ID = "DEMO"  
+PAYPAL_PLAN_ID = "DEMO"    
+
+# -------------------------
+# GESTION DE L'ACCÈS
+# -------------------------
+if "est_abonne" not in st.session_state:
+    st.session_state.est_abonne = False
+
+try:
+    API_KEY = st.secrets["GROQ_API_KEY"]
+except:
+    API_KEY = ""
+
+# -------------------------
+# INTERFACE SÉCURISÉE
+# -------------------------
+st.title("🚀 LinkedBoost Pro")
+st.subheader("Transformez votre profil LinkedIn en un aimant à clients et recruteurs en 2 secondes.")
+
+# CAS 1 : L'UTILISATEUR N'A PAS PAYÉ
+if not st.session_state.est_abonne:
+    st.warning("🔒 Cette application est réservée aux membres de la version Premium.")
+    
+    col_offre, col_connexion = st.columns(2, gap="large")
+    
+    with col_offre:
+        st.subheader("🚀 Devenez magnétique pour 20 $/mois")
+        st.write("Ne passez plus inaperçu. Obtenez un titre percutant, une section 'À Propos' captivante et optimisez votre profil pour l'algorithme LinkedIn.")
+        st.write("Le paiement est entièrement sécurisé par **PayPal**.")
+        
+        if PAYPAL_CLIENT_ID == "DEMO":
+            paypal_html = """
+            <a href="https://paypal.com" target="_blank" style="text-decoration: none;">
+                <div style="background-color: #ffc439; color: #003087; text-align: center; 
+                            padding: 12px; font-family: Arial, sans-serif; font-weight: bold; 
+                            border-radius: 4px; max-width: 300px; cursor: pointer; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+                    🟨 S'abonner avec PayPal (Démo)
+                </div>
+            </a>
+            """
+        else:
+            paypal_html = f"""
+            <div id="paypal-button-container-fixed" style="max-width: 350px; margin-top: 20px;"></div>
+            <script src="https://paypal.com/sdk/js?client-id={PAYPAL_CLIENT_ID}&vault=true&intent=subscription" data-sdk-integration-source="button-factory"></script>
+            <script>
+              paypal.Buttons({{
+                  style: {{ shape: 'rect', color: 'gold', layout: 'vertical', label: 'subscribe' }},
+                  createSubscription: function(data, actions) {{
+                    return actions.subscription.create({{ 'plan_id': '{PAYPAL_PLAN_ID}' }});
+                  }},
+                  onApprove: function(data, actions) {{
+                    alert('Abonnement réussi ! ID : ' + data.subscriptionID);
+                  }}
+              }}).render('#paypal-button-container-fixed');
+            </script>
+            """
+        components.html(paypal_html, height=150, scrolling=False)
+        
+    with col_connexion:
+        st.subheader("🔑 Déjà abonné ?")
+        email = st.text_input("Adresse e-mail")
+        mot_de_passe = st.text_input("Mot de passe", type="password")
+        
+        if st.button("Se connecter", use_container_width=True):
+            if email == "test@client.com" and mot_de_passe == "linked20":
+                st.session_state.est_abonne = True
+                st.success("Accès accordé !")
+                st.rerun()
+            else:
+                st.error("Identifiants incorrects.")
+
+# CAS 2 : L'UTILISATEUR EST ABONNÉ -> ACCÈS COMPLÈT
+else:
+    st.write("✨ **Espace LinkedIn Optimisation Actif.** Boostez votre visibilité.")
+    if st.button("🚪 Se déconnecter", key="logout"):
+        st.session_state.est_abonne = False
+        st.rerun()
+        
+    st.write("---")
+
+    with st.container(border=True):
+        col_inputs, col_options = st.columns(2)
+        
+        with col_inputs:
+            metier_titre = st.text_input("Quel est votre métier ou secteur d'activité ?", placeholder="Ex: Développeur Web Freelance, Directeur Commercial")
+            experience_brute = st.text_area(
+                "Décrivez vos expériences ou vos compétences clés (en vrac) :", 
+                placeholder="Ex: 5 ans d'expérience, expert Python et React, j'aide les entreprises à automatiser leurs tâches, rigoureux et autonome."
+            )
+            
+        with col_options:
+            element_profil = st.selectbox("Que voulez-vous optimiser ?", [
+                "🔥 Le Titre de profil (Accroche percutante sous votre nom)",
+                "📖 La section 'Infos / À Propos' (Storytelling captivant pour se vendre)",
+                "💼 Descriptions d'expériences (Mettre en valeur vos résultats)"
+            ])
+            
+            ton_profil = st.selectbox("Quel style voulez-vous adopter ?", [
+                "🚀 Innovant & Créatif (Idéal Startups, Tech, Marketing)",
+                "🏢 Expert & Institutionnel (Idéal Finance, Droit, Management)",
+                "🤝 Humain & Accessible (Idéal Coachs, RH, Freelances)"
+            ])
+
+        generer = st.button("🚀 Optimiser mon Profil LinkedIn", use_container_width=True)
+
+    if generer:
+        if not API_KEY:
+            st.error("⚠️ Erreur : La clé GROQ_API_KEY est manquante dans les Secrets.")
+        elif not metier_titre:
+            st.error("⚠️ Veuillez entrer au moins votre métier ou secteur.")
+        else:
+            with st.spinner("L'IA de Groq analyse et transforme votre profil LinkedIn..."):
+                try:
+                    client = Groq(api_key=API_KEY)
+                    
+                    prompt_systeme = """Tu es un expert mondial en Personal Branding et le meilleur coach LinkedIn au monde.
+                    Ton objectif est de rédiger des textes de profils LinkedIn mémorables, haut de gamme et optimisés pour le référencement (SEO).
+                    Utilise des puces claires, un ton engageant et structure parfaitement le contenu.
+                    Ne fais aucune introduction ni conclusion amicale, commence directement par le texte optimisé."""
+
+                    prompt_utilisateur = f"""
+                    Métier/Secteur : {metier_titre}
+                    Détails et compétences : {experience_brute}
+                    Élément du profil à générer : {element_profil}
+                    Style demandé : {ton_profil}
+                    """
+
+                    reponse = client.chat.completions.create(
+                        model="llama-3.3-70b-versatile",
+                        messages=[
+                            {"role": "system", "content": prompt_systeme},
+                            {"role": "user", "content": prompt_utilisateur}
+                        ],
+                        temperature=0.7
+                    )
+                    
+                    # Extraction sécurisée sans bug
+                    profil_final = reponse.choices[0].message.content
+                    st.success("✨ Votre optimisation LinkedIn est prête !")
+                    st.markdown(profil_final)
+                    st.text_area("Copier le texte brut :", value=profil_final, height=300)
+
+                except Exception as e:
+                    st.error(f"Erreur technique Groq : {str(e)}")
