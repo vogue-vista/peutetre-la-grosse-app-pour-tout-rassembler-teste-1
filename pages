@@ -1,0 +1,7 @@
+├── app.py               (Ta page d'accueil avec le mur de paiement)
+├── requirements.txt     (Tes dépendances)
+└── pages/               (Dossier contenant tes applications)
+    ├── 1_Calendrier.py
+    ├── 2_Newsletter.py
+    ├── 3_Traducteur.py
+    └── 4_CrossSell.py
