@@ -2,7 +2,7 @@ import streamlit as st
 import streamlit.components.v1 as components
 import os
 
-# 🛠️ CONFIGURATION DE LA BARRE LATÉRALE
+# 🛠️ CONFIGURATION DE LA BARRE LATÉRALE FORCÉE
 st.set_page_config(
     page_title="Suite IA Entreprise PRO", 
     page_icon="🚀", 
@@ -10,7 +10,7 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
-# Gestion de la session de connexion
+# Gestion de la session de connexion globale
 if "est_abonne_global" not in st.session_state:
     st.session_state.est_abonne_global = False
 
@@ -66,60 +66,72 @@ if not st.session_state.est_abonne_global:
         if st.button("Débloquer la Suite Pro", use_container_width=True):
             if email.strip() == "admin@entreprise.com" and mot_de_passe.strip() == "suite500":
                 st.session_state.est_abonne_global = True
+                # 🔑 TRUC MAGIQUE 1 : Débloque instantanément les accès des sous-applications
+                st.session_state.est_abonne = True 
                 st.success("Accès accordé !")
                 st.rerun()
             else:
                 st.error("Identifiants incorrects ou abonnement inactif.")
 
 # ------------------------------------------------------------------
-# ÉCRAN DE BIENVENUE & BARRE LATÉRALE ULTRA-ROBUSTE (CONNECTÉ)
+# ÉCRAN DE BIENVENUE & BARRE LATÉRALE (L'UTILISATEUR EST CONNECTÉ)
 # ------------------------------------------------------------------
 else:
+    # On s'assure en permanence que la variable locale reste vraie
+    st.session_state.est_abonne = True
+
     dossier_pages = "pages"
     fichiers_apps = {}
 
-    # 1. On scanne manuellement le dossier pour lister vos applications
+    # Scan du dossier pour lister vos applications
     if os.path.exists(dossier_pages):
         fichiers = sorted([f for f in os.listdir(dossier_pages) if f.endswith(".py")])
         for f in fichiers:
-            # Crée un titre propre pour le menu à partir du nom du fichier
             nom_propre = f.replace(".py", "").replace("_", " ").title()
             fichiers_apps[nom_propre] = os.path.join(dossier_pages, f)
 
-    # 2. Construction forcée de la barre latérale
+    # Construction forcée de la barre latérale
     with st.sidebar:
         st.title("🚀 Suite Pro 500$/mo")
         st.write("Connecté : admin@entreprise.com")
         
         if st.button("🚪 Se déconnecter de la plateforme", use_container_width=True):
             st.session_state.est_abonne_global = False
+            st.session_state.est_abonne = False
             st.rerun()
             
         st.write("---")
         
-        # Le menu déroulant à gauche réapparaît de force ici
         if fichiers_apps:
             choix_app = st.selectbox("📂 Sélectionnez votre application :", list(fichiers_apps.keys()))
         else:
             choix_app = None
 
-    # 3. Zone principale d'affichage
+    # Zone principale d'affichage
     if choix_app:
         chemin_complet = fichiers_apps[choix_app]
+        
+        # 🔑 TRUC MAGIQUE 2 : Contre-attaque CSS pour FORCER l'affichage de la barre de gauche
+        # Même si une mini-app injecte du code pour cacher la sidebar, cette ligne l'affiche de force !
+        st.markdown("""
+        <style>
+        [data-testid="stSidebar"] { display: flex !important; }
+        [data-testid="stSidebarNav"] { display: flex !important; }
+        </style>
+        """, unsafe_allow_html=True)
         
         try:
             with open(chemin_complet, "r", encoding="utf-8") as file:
                 code_mini_app = file.read()
             
-            # On exécute l'application sélectionnée dans son propre espace
-            context_local = {"st": st}
+            # Exécution de la mini-app
+            context_local = {"st": st, "components": components}
             exec(code_mini_app, context_local)
             
         except Exception as e:
             st.title(f"❌ Erreur dans l'application : {choix_app}")
             st.error(f"Le fichier `{chemin_complet}` contient une erreur de code interne.")
             st.warning(f"Détail technique : {str(e)}")
-            st.info("💡 C'est ici que vous verrez quelle application contient le fameux 'st.items' ! Vous saurez exactement quel fichier corriger.")
     else:
         st.title("⚡ Bienvenue dans votre Suite IA Entreprise PRO")
-        st.info("Aucun fichier détecté dans le dossier `pages`. Veuillez vérifier l'arborescence sur votre GitHub.")
+        st.info("Aucun fichier détecté dans le dossier `pages`.")
