@@ -130,6 +130,14 @@ else:
             
             # Exécution de la mini-app avec accès aux modules globaux pour le 8en1
             exec(code_mini_app, globals())
+                  
+        # 🔑 CODE DE MASQUAGE : Supprime la liste du haut pour ne garder que votre selectbox
+        st.markdown("""
+        <style>
+        [data-testid="stSidebarNav"] { display: none !important; }
+        </style>
+        """, unsafe_allow_html=True)
+
             
         except Exception as e:
             st.title(f"❌ Erreur dans l'application : {choix_app}")
