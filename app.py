@@ -1,7 +1,7 @@
 import streamlit as st
 import streamlit.components.v1 as components
 
-# 🛠️ CORRECTION ABSOLUE : initial_sidebar_state="expanded" force l'affichage de la barre de côté
+# 🛠️ CONFIGURATION : Barre latérale forcée
 st.set_page_config(
     page_title="Suite IA Entreprise PRO", 
     page_icon="🚀", 
@@ -21,9 +21,7 @@ html, body, div, p, h1, h2, h3, h4, h5, h6, span, button { font-family: 'Poppins
 </style>
 """, unsafe_allow_html=True)
 
-# ------------------------------------------------------------------
-# ZONE DE CONFIGURATION PAYPAL DEVELOPER
-# ------------------------------------------------------------------
+# CONFIGURATION PAYPAL
 PAYPAL_CLIENT_ID = "sandbox"  
 PAYPAL_PLAN_ID = "P-XXXXXXXXXX"  
 
@@ -37,7 +35,7 @@ if not st.session_state.est_abonne_global:
     col_offre, col_connexion = st.columns(2, gap="large")
     
     with col_offre:
-        st.subheader("💎 Accès Illimité à nos 20 Applications pour 500 $/mois")
+        st.subheader("💎 Accès Illimité à nos 28 Applications pour 500 $/mois")
         st.write("Centralisez tous vos outils de croissance au même endroit.")
         st.write("Un seul abonnement unique. Paiement entièrement sécurisé par **PayPal**.")
         
@@ -60,7 +58,7 @@ if not st.session_state.est_abonne_global:
         
     with col_connexion:
         st.subheader("🔑 Connexion Client Entreprise")
-        st.write("Entrez vos identifiants pour débloquer votre accès à vie.")
+        st.write("Entrez vos identifiants pour débloquer votre accès.")
         email = st.text_input("Adresse e-mail")
         mot_de_passe = st.text_input("Mot de passe", type="password")
         
@@ -73,13 +71,37 @@ if not st.session_state.est_abonne_global:
                 st.error("Identifiants incorrects ou abonnement inactif.")
 
 # ------------------------------------------------------------------
-# ÉCRAN DE BIENVENUE (L'UTILISATEUR EST CONNECTÉ)
+# ÉCRAN DE BIENVENUE & BARRE LATÉRALE (L'UTILISATEUR EST CONNECTÉ)
 # ------------------------------------------------------------------
 else:
-    st.title("⚡ Bienvenue dans votre Espace Centralisé")
-    st.success("🔓 Vos accès globaux sont actifs. Utilisez le menu à gauche pour naviguer librement entre vos 20 outils !")
+    # 🌟 CORRECTION ICI : Création de la liste des 28 applications
+    liste_apps = [f"🛠️ Application {i}" for i in range(1, 29)]
     
-    st.write("---")
-    if st.button("🚪 Se déconnecter de la plateforme", use_container_width=True):
+    # Ajout du titre et du sélecteur directement DANS la barre latérale
+    st.sidebar.title("📱 Vos 28 Applications")
+    st.sidebar.write("Sélectionnez votre outil :")
+    choix_app = st.sidebar.selectbox("Navigation", liste_apps, label_visibility="collapsed")
+    
+    # Bouton de déconnexion placé en bas de la barre latérale
+    st.sidebar.write("---")
+    if st.sidebar.button("🚪 Se déconnecter", use_container_width=True):
         st.session_state.est_abonne_global = False
         st.rerun()
+
+    # Contenu de l'application principale selon le choix de l'utilisateur
+    st.title(f"⚡ {choix_app}")
+    st.success("🔓 Vos accès globaux sont actifs.")
+    
+    # Structure conditionnelle pour afficher le bon module
+    if choix_app == "🛠️ Application 1":
+        st.subheader("Bienvenue dans l'outil de gestion 1")
+        st.info("Insérez ici le code spécifique à votre première mini-app.")
+        # Ajoutez vos inputs, graphiques ou fonctions de l'app 1 ici...
+        
+    elif choix_app == "🛠️ Application 2":
+        st.subheader("Bienvenue dans l'outil d'analyse 2")
+        st.info("Insérez ici le code spécifique à votre deuxième mini-app.")
+        
+    # Répétez le pattern `elif` pour vos autres applications spécifiques...
+    else:
+        st.write("Le contenu de cette application sera configuré ici.")
