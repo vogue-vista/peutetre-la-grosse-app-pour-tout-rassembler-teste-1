@@ -1,7 +1,7 @@
 import streamlit as st
 import streamlit.components.v1 as components
 
-# 🛠️ CONFIGURATION : Barre latérale forcée
+# 🛠️ CONFIGURATION DE LA SUITE
 st.set_page_config(
     page_title="Suite IA Entreprise PRO", 
     page_icon="🚀", 
@@ -71,37 +71,60 @@ if not st.session_state.est_abonne_global:
                 st.error("Identifiants incorrects ou abonnement inactif.")
 
 # ------------------------------------------------------------------
-# ÉCRAN DE BIENVENUE & BARRE LATÉRALE (L'UTILISATEUR EST CONNECTÉ)
+# ÉCRAN DE BIENVENUE & EXÉCUTION DES MINI APPS (CONNECTÉ)
 # ------------------------------------------------------------------
 else:
-    # 🌟 CORRECTION ICI : Création de la liste des 28 applications
-    liste_apps = [f"🛠️ Application {i}" for i in range(1, 29)]
+    # 🎯 LISTE BIEN ORDONNÉE ET EXACTE DE VOS FICHIERS (D'APRÈS VOTRE PHOTO)
+    options_apps = {
+        "🛡️ Mail Bouclier Pro": "pages/1_mailbouclierpro.py",
+        "🏠 Créateur de Texte Immobilier": "pages/2_immobilier texte ge....py",
+        "📝 Créateur de Fiche": "pages/3_createur de fiche d....py",
+        "✍️ Créateur de Texte": "pages/4_createur de texte p....py",
+        "📞 Script Téléphonique": "pages/5_scripte telephonique.py",
+        "🧲 Aimant à Client": "pages/6_aimment a client.py",
+        "📣 Créateur de Pub": "pages/7_createur de pub.py",
+        "🚀 Astuces Top Performance": "pages/8_truc pour etre top ....py",
+        "📊 Présentation Pro": "pages/9_truc pour genre pre....py",
+        "💻 Création de Scripts": "pages/10_truc pour crée des scripte.py",
+        "🔄 Automatisation des Retours": "pages/11_truc pour genre automatiser les retour.py",
+        "🛠️ Détection des Pannes": "pages/12_truc pour detecter les pannes.py",
+        "✒️ Bonnes Descriptions": "pages/13_truc pour gerne faire de bonne description.py",
+        "✉️ Relance Emails Persuasifs": "pages/14_truc pour relancer des email persuasife.py",
+        "📅 Calendrier Éditorial": "pages/15_calendrier editorial.py",
+        "✨ Écritures Spéciales": "pages/16_truc pour ecrire genre des truc special.py",
+        "🤝 Outils pour Convaincre": "pages/17_truc pour convaincre.py",
+        "🌐 Traducteur Amélioré": "pages/18_traducteur ameliorer.py",
+        "⚡ Optimisateur pour Combo": "pages/19_optimisateur pour combo.py",
+        "📦 App 8en1 - Premier": "pages/20.1_ premier de l'app 8en1.py",
+        "📦 App 8en1 - Deuxième": "pages/20.2 deuxieme du 8en1.py",
+        "📦 App 8en1 - Partie 3": "pages/20.3 du 8en1.py",
+        "📦 App 8en1 - Partie 4": "pages/20.4_du 8en1.py",
+        "📦 App 8en1 - Partie 5": "pages/20.5 8en1.py",
+        "📦 App 8en1 - Partie 6": "pages/20.6 de 8en1.py",
+        "📦 App 8en1 - Partie 7": "pages/20.7_du 8en1.py",
+        "📦 App 8en1 - Partie 8": "pages/20.8_du 8en1.py"
+    }
     
-    # Ajout du titre et du sélecteur directement DANS la barre latérale
-    st.sidebar.title("📱 Vos 28 Applications")
-    st.sidebar.write("Sélectionnez votre outil :")
-    choix_app = st.sidebar.selectbox("Navigation", liste_apps, label_visibility="collapsed")
+    # Construction de la barre latérale
+    st.sidebar.title("📱 Vos Applications")
+    choix_app = st.sidebar.selectbox("Sélectionnez votre outil :", list(options_apps.keys()))
     
-    # Bouton de déconnexion placé en bas de la barre latérale
+    # Bouton de déconnexion en bas de la barre
     st.sidebar.write("---")
     if st.sidebar.button("🚪 Se déconnecter", use_container_width=True):
         st.session_state.est_abonne_global = False
         st.rerun()
 
-    # Contenu de l'application principale selon le choix de l'utilisateur
-    st.title(f"⚡ {choix_app}")
-    st.success("🔓 Vos accès globaux sont actifs.")
+    # Lecture et exécution du fichier sélectionné
+    chemin_fichier = options_apps[choix_app]
     
-    # Structure conditionnelle pour afficher le bon module
-    if choix_app == "🛠️ Application 1":
-        st.subheader("Bienvenue dans l'outil de gestion 1")
-        st.info("Insérez ici le code spécifique à votre première mini-app.")
-        # Ajoutez vos inputs, graphiques ou fonctions de l'app 1 ici...
+    try:
+        with open(chemin_fichier, "r", encoding="utf-8") as f:
+            code_mini_app = f.read()
         
-    elif choix_app == "🛠️ Application 2":
-        st.subheader("Bienvenue dans l'outil d'analyse 2")
-        st.info("Insérez ici le code spécifique à votre deuxième mini-app.")
+        # CETTE LIGNE MAGIQUE CORRIGE LE BUG : Elle affiche le vrai code de votre mini-application
+        exec(code_mini_app)
         
-    # Répétez le pattern `elif` pour vos autres applications spécifiques...
-    else:
-        st.write("Le contenu de cette application sera configuré ici.")
+    except FileNotFoundError:
+        st.error(f"⚠️ Erreur de lecture : Le fichier `{chemin_fichier}` est introuvable dans le dossier `pages`.")
+        st.info("Vérifiez que le nom du fichier sur GitHub correspond bien mot pour mot (espaces inclus).")
