@@ -1,4 +1,2 @@
-beautifulsoup4
-bs4
-requests
-groq
+streamlit>=1.35.0
+groq>=0.4.0
