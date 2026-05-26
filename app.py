@@ -1,11 +1,13 @@
 import streamlit as st
 import streamlit.components.v1 as components
+import os
 
-# 🛠️ CONFIGURATION DE LA SUITE
+# 🛠️ CONFIGURATION DE LA BARRE LATÉRALE
 st.set_page_config(
     page_title="Suite IA Entreprise PRO", 
     page_icon="🚀", 
-    layout="wide"
+    layout="wide",
+    initial_sidebar_state="expanded"
 )
 
 # Gestion de la session de connexion
@@ -70,25 +72,54 @@ if not st.session_state.est_abonne_global:
                 st.error("Identifiants incorrects ou abonnement inactif.")
 
 # ------------------------------------------------------------------
-# ÉCRAN DE BIENVENUE & BARRE LATÉRALE PROTÉGÉE (CONNECTÉ)
+# ÉCRAN DE BIENVENUE & BARRE LATÉRALE ULTRA-ROBUSTE (CONNECTÉ)
 # ------------------------------------------------------------------
 else:
-    # Bouton de déconnexion toujours visible à gauche
+    dossier_pages = "pages"
+    fichiers_apps = {}
+
+    # 1. On scanne manuellement le dossier pour lister vos applications
+    if os.path.exists(dossier_pages):
+        fichiers = sorted([f for f in os.listdir(dossier_pages) if f.endswith(".py")])
+        for f in fichiers:
+            # Crée un titre propre pour le menu à partir du nom du fichier
+            nom_propre = f.replace(".py", "").replace("_", " ").title()
+            fichiers_apps[nom_propre] = os.path.join(dossier_pages, f)
+
+    # 2. Construction forcée de la barre latérale
     with st.sidebar:
         st.title("🚀 Suite Pro 500$/mo")
         st.write("Connecté : admin@entreprise.com")
+        
         if st.button("🚪 Se déconnecter de la plateforme", use_container_width=True):
             st.session_state.est_abonne_global = False
             st.rerun()
+            
         st.write("---")
+        
+        # Le menu déroulant à gauche réapparaît de force ici
+        if fichiers_apps:
+            choix_app = st.selectbox("📂 Sélectionnez votre application :", list(fichiers_apps.keys()))
+        else:
+            choix_app = None
 
-    # 🛡️ LE SYSTÈME ANTI-PLANTAGE GLOBAL :
-    # Si une mini-app contient une erreur, elle n'effacera plus la barre latérale.
-    try:
-        navigation_suite = st.navigation(st.sidebar) 
-        navigation_suite.run()
-    except Exception as e:
-        st.title("⚡ Suite IA Entreprise PRO")
-        st.error("⚠️ Streamlit a détecté un fichier incompatible dans votre dossier `pages`.")
-        st.info("La barre latérale est affichée à gauche. Cliquez sur une autre application pour l'ouvrir.")
-        st.warning(f"Détail technique de l'erreur : {str(e)}")
+    # 3. Zone principale d'affichage
+    if choix_app:
+        chemin_complet = fichiers_apps[choix_app]
+        
+        try:
+            with open(chemin_complet, "r", encoding="utf-8") as file:
+                code_mini_app = file.read()
+            
+            # On exécute l'application sélectionnée dans son propre espace
+            context_local = {"st": st}
+            exec(code_mini_app, context_local)
+            
+        except Exception as e:
+            st.title(f"❌ Erreur dans l'application : {choix_app}")
+            st.error(f"Le fichier `{chemin_complet}` contient une erreur de code interne.")
+            st.warning(f"Détail technique : {str(e)}")
+            st.info("💡 C'est ici que vous verrez quelle application contient le fameux 'st.items' ! Vous saurez exactement quel fichier corriger.")
+    else:
+        st.title("⚡ Bienvenue dans votre Suite IA Entreprise PRO")
+        st.info("Aucun fichier détecté dans le dossier `pages`. Veuillez vérifier l'arborescence sur votre GitHub.")
