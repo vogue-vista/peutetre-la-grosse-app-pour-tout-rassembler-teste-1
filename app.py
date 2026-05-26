@@ -66,7 +66,6 @@ if not st.session_state.est_abonne_global:
         if st.button("Débloquer la Suite Pro", use_container_width=True):
             if email.strip() == "admin@entreprise.com" and mot_de_passe.strip() == "suite500":
                 st.session_state.est_abonne_global = True
-                # 🔑 TRUC MAGIQUE 1 : Débloque instantanément les accès des sous-applications
                 st.session_state.est_abonne = True 
                 st.success("Accès accordé !")
                 st.rerun()
@@ -77,7 +76,6 @@ if not st.session_state.est_abonne_global:
 # ÉCRAN DE BIENVENUE & BARRE LATÉRALE (L'UTILISATEUR EST CONNECTÉ)
 # ------------------------------------------------------------------
 else:
-    # On s'assure en permanence que la variable locale reste vraie
     st.session_state.est_abonne = True
 
     dossier_pages = "pages"
@@ -111,8 +109,7 @@ else:
     if choix_app:
         chemin_complet = fichiers_apps[choix_app]
         
-        # 🔑 TRUC MAGIQUE 2 : Contre-attaque CSS pour FORCER l'affichage de la barre de gauche
-        # Même si une mini-app injecte du code pour cacher la sidebar, cette ligne l'affiche de force !
+        # Super Contre-attaque CSS injectée en permanence
         st.markdown("""
         <style>
         [data-testid="stSidebar"] { display: flex !important; }
@@ -124,7 +121,13 @@ else:
             with open(chemin_complet, "r", encoding="utf-8") as file:
                 code_mini_app = file.read()
             
-            # Exécution de la mini-app
+            # 🔑 LE FILTRE MAGIQUE EXTRAORDINAIRE :
+            # On efface automatiquement les lignes CSS nuisibles qui cachent la barre latérale
+            code_mini_app = code_mini_app.replace('display: none !important;', 'display: flex !important;')
+            code_mini_app = code_mini_app.replace('[data-testid="stSidebar"] {display: none !important;}', '')
+            code_mini_app = code_mini_app.replace('[data-testid="stSidebarNav"] {display: none !important;}', '')
+            
+            # Exécution sécurisée de la mini-app nettoyée
             context_local = {"st": st, "components": components}
             exec(code_mini_app, context_local)
             
