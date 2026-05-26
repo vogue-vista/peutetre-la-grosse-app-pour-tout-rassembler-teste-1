@@ -1,13 +1,19 @@
 import streamlit as st
 import streamlit.components.v1 as components
 
-st.set_page_config(page_title="Suite IA Entreprise PRO", page_icon="🚀", layout="wide")
+# 🛠️ CORRECTION ABSOLUE : initial_sidebar_state="expanded" force l'affichage de la barre de côté
+st.set_page_config(
+    page_title="Suite IA Entreprise PRO", 
+    page_icon="🚀", 
+    layout="wide",
+    initial_sidebar_state="expanded"
+)
 
 # Gestion de la session de connexion
 if "est_abonne_global" not in st.session_state:
     st.session_state.est_abonne_global = False
 
-# Design épuré en police Poppins (Le masquage de la sidebar a été supprimé 🔓)
+# Design épuré en police Poppins
 st.markdown("""
 <style>
 @import url('https://googleapis.com');
@@ -31,7 +37,7 @@ if not st.session_state.est_abonne_global:
     col_offre, col_connexion = st.columns(2, gap="large")
     
     with col_offre:
-        st.subheader("💎 Accès Illimité à vos 20 Applications pour 500 $/mois")
+        st.subheader("💎 Accès Illimité à nos 20 Applications pour 500 $/mois")
         st.write("Centralisez tous vos outils de croissance au même endroit.")
         st.write("Un seul abonnement unique. Paiement entièrement sécurisé par **PayPal**.")
         
@@ -77,4 +83,3 @@ else:
     if st.button("🚪 Se déconnecter de la plateforme", use_container_width=True):
         st.session_state.est_abonne_global = False
         st.rerun()
-
