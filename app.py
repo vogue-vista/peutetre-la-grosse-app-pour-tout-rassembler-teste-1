@@ -78,8 +78,7 @@ if not st.session_state.est_abonne_global:
 else:
     st.session_state.est_abonne = True
 
-    # 🔑 MASQUAGE DE LA LISTE DU HAUT (Spécifique Option 2)
-    # Ce code CSS cache la navigation automatique du haut pour ne garder que votre sélecteur jaune
+    # 🔑 MASQUAGE DE SÉCURITÉ DE LA LISTE DU HAUT (Avant l'exécution)
     st.markdown("""
     <style>
     [data-testid="stSidebarNav"] { display: none !important; }
@@ -126,13 +125,24 @@ else:
             code_mini_app = code_mini_app.replace('display: none !important;', 'display: flex !important;')
             code_mini_app = code_mini_app.replace('[data-testid="stSidebar"] {display: none !important;}', '')
             
-            # Exécution de la mini-app avec accès global pour réparer le pack 8en1
+            # Exécution de la mini-app
             exec(code_mini_app, globals())
+            
+            # 🔑 LE TRUC COMPLÉMENTAIRE EST ICI : On ré-injecte le masquage JUSTE APRÈS l'exécution
+            # De cette manière, même si la mini-app réinitialise l'affichage, la deuxième barre reste cachée.
+            st.markdown("""
+            <style>
+            [data-testid="stSidebarNav"] { display: none !important; }
+            </style>
+            """, unsafe_allow_html=True)
             
         except Exception as e:
             st.title(f"❌ Erreur dans l'application : {choix_app}")
             st.error(f"Le fichier `{chemin_complet}` contient une erreur de code interne.")
             st.warning(f"Détail technique : {str(e)}")
+            
+            # On s'assure de garder la barre cachée même en cas de message d'erreur
+            st.markdown("<style>[data-testid=\"stSidebarNav\"] { display: none !important; }</style>", unsafe_allow_html=True)
     else:
         st.title("⚡ Bienvenue dans votre Suite IA Entreprise PRO")
         st.info("Aucun fichier détecté dans le dossier `pages`.")
