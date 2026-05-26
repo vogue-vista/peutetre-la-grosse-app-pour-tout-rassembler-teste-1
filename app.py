@@ -37,7 +37,7 @@ if not st.session_state.est_abonne_global:
     col_offre, col_connexion = st.columns(2, gap="large")
     
     with col_offre:
-        st.subheader("💎 Accès Illimité à vos 20 Applications pour 500 $/mois")
+        st.subheader("💎 Accès Illimité à vos 28 Applications pour 500 $/mois")
         st.write("Centralisez tous vos outils de croissance au même endroit.")
         st.write("Un seul abonnement unique. Paiement entièrement sécurisé par **PayPal**.")
         
