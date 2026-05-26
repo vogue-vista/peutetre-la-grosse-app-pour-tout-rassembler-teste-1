@@ -14,7 +14,7 @@ st.set_page_config(
 if "est_abonne_global" not in st.session_state:
     st.session_state.est_abonne_global = False
 
-# 🛠️ CORRECTION 1 : L'URL de Google Fonts était cassée. Voici le lien d'importation officiel.
+# Design épuré en police Poppins
 st.markdown("""
 <style>
 @import url('https://googleapis.com');
@@ -40,8 +40,6 @@ if not st.session_state.est_abonne_global:
         st.write("Centralisez tous vos outils de croissance au même endroit.")
         st.write("Un seul abonnement unique. Paiement entièrement sécurisé par **PayPal**.")
         
-        # 🛠️ CORRECTION 2 : L'URL SDK de PayPal contenait une erreur de syntaxe ("paypal.comsandbox..."). 
-        # Voici le lien officiel corrigé et fonctionnel :
         paypal_button_html = f"""
         <div id="paypal-button-container-suite" style="max-width: 350px; margin-top: 20px;"></div>
         <script src="https://paypal.com{PAYPAL_CLIENT_ID}&vault=true&intent=subscription" data-sdk-integration-source="button-factory"></script>
@@ -75,10 +73,19 @@ if not st.session_state.est_abonne_global:
                 st.error("Identifiants incorrects ou abonnement inactif.")
 
 # ------------------------------------------------------------------
-# ÉCRAN DE BIENVENUE & BARRE LATÉRALE (L'UTILISATEUR EST CONNECTÉ)
+# ÉCRAN DE BIENVENUE & BARRE LATÉRALE VERSION 2 (CONNECTÉ)
 # ------------------------------------------------------------------
 else:
     st.session_state.est_abonne = True
+
+    # 🔑 MASQUAGE DE LA LISTE DU HAUT (Spécifique Option 2)
+    # Ce code CSS cache la navigation automatique du haut pour ne garder que votre sélecteur jaune
+    st.markdown("""
+    <style>
+    [data-testid="stSidebarNav"] { display: none !important; }
+    [data-testid="stSidebar"] { display: flex !important; }
+    </style>
+    """, unsafe_allow_html=True)
 
     dossier_pages = "pages"
     fichiers_apps = {}
@@ -90,7 +97,7 @@ else:
             nom_propre = f.replace(".py", "").replace("_", " ").title()
             fichiers_apps[nom_propre] = os.path.join(dossier_pages, f)
 
-    # Construction forcée de la barre latérale
+    # Construction forcée de votre barre latérale manuelle
     with st.sidebar:
         st.title("🚀 Suite Pro 500$/mo")
         st.write("Connecté : admin@entreprise.com")
@@ -111,26 +118,17 @@ else:
     if choix_app:
         chemin_complet = fichiers_apps[choix_app]
         
-        # Super Contre-attaque CSS injectée en permanence
-        st.markdown("""
-        <style>
-        [data-testid="stSidebar"] { display: flex !important; }
-        [data-testid="stSidebarNav"] { display: flex !important; }
-        </style>
-        """, unsafe_allow_html=True)
-        
         try:
             with open(chemin_complet, "r", encoding="utf-8") as file:
                 code_mini_app = file.read()
             
-            # Filtre automatique anti-masquage de la barre latérale
+            # Filtre automatique anti-masquage de la barre latérale pour vos fichiers
             code_mini_app = code_mini_app.replace('display: none !important;', 'display: flex !important;')
             code_mini_app = code_mini_app.replace('[data-testid="stSidebar"] {display: none !important;}', '')
-            code_mini_app = code_mini_app.replace('[data-testid="stSidebarNav"] {display: none !important;}', '')
             
-            # Exécution de la mini-app avec accès aux modules globaux pour le 8en1
+            # Exécution de la mini-app avec accès global pour réparer le pack 8en1
             exec(code_mini_app, globals())
-
+            
         except Exception as e:
             st.title(f"❌ Erreur dans l'application : {choix_app}")
             st.error(f"Le fichier `{chemin_complet}` contient une erreur de code interne.")
