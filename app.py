@@ -121,15 +121,13 @@ else:
             with open(chemin_complet, "r", encoding="utf-8") as file:
                 code_mini_app = file.read()
             
-            # 🔑 LE FILTRE MAGIQUE EXTRAORDINAIRE :
-            # On efface automatiquement les lignes CSS nuisibles qui cachent la barre latérale
+            # Filtre automatique anti-masquage de la barre latérale
             code_mini_app = code_mini_app.replace('display: none !important;', 'display: flex !important;')
             code_mini_app = code_mini_app.replace('[data-testid="stSidebar"] {display: none !important;}', '')
             code_mini_app = code_mini_app.replace('[data-testid="stSidebarNav"] {display: none !important;}', '')
             
-            # Exécution sécurisée de la mini-app nettoyée
-            context_local = {"st": st, "components": components}
-            exec(code_mini_app, context_local)
+            # 🔑 LE CHANGEMENT EST ICI : On utilise globals() pour débloquer le pack 8en1
+            exec(code_mini_app, globals())
             
         except Exception as e:
             st.title(f"❌ Erreur dans l'application : {choix_app}")
