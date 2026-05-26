@@ -7,9 +7,11 @@ st.set_page_config(page_title="Suite IA Entreprise PRO", page_icon="🚀", layou
 if "est_abonne_global" not in st.session_state:
     st.session_state.est_abonne_global = False
 
-# Masquer la barre latérale si l'utilisateur n'est pas connecté
+# 🛠️ CORRECTION DU BUG DE SIDEBAR : Affichée ou masquée selon la connexion
 if not st.session_state.est_abonne_global:
     st.markdown("<style>[data-testid='stSidebar'] {display: none !important;}</style>", unsafe_allow_html=True)
+else:
+    st.markdown("<style>[data-testid='stSidebar'] {display: flex !important;}</style>", unsafe_allow_html=True)
 
 # Design épuré en police Poppins
 st.markdown("""
@@ -20,11 +22,9 @@ html, body, div, p, h1, h2, h3, h4, h5, h6, span, button { font-family: 'Poppins
 """, unsafe_allow_html=True)
 
 # ------------------------------------------------------------------
-# 🛠️ ZONE DE CONFIGURATION PAYPAL DEVELOPER (À CHANGER PLUS TARD)
+# ZONE DE CONFIGURATION PAYPAL DEVELOPER (À CHANGER PLUS TARD)
 # ------------------------------------------------------------------
-# Remplace "sandbox" par ton vrai Client ID de production PayPal plus tard
 PAYPAL_CLIENT_ID = "sandbox"  
-# Remplace "P-XXXXXXXXXX" par l'ID exact de ton plan d'abonnement à 500$/mois créé sur PayPal
 PAYPAL_PLAN_ID = "P-XXXXXXXXXX"  
 
 # ------------------------------------------------------------------
@@ -37,30 +37,21 @@ if not st.session_state.est_abonne_global:
     col_offre, col_connexion = st.columns(2, gap="large")
     
     with col_offre:
-        st.subheader("💎 Accès Illimité à vos 28 Applications pour 500 $/mois")
+        st.subheader("💎 Accès Illimité à vos 20 Applications pour 500 $/mois")
         st.write("Centralisez tous vos outils de croissance au même endroit.")
         st.write("Un seul abonnement unique. Paiement entièrement sécurisé par **PayPal**.")
         
-        # Intégration du SDK intelligent PayPal officiel pour les abonnements
         paypal_button_html = f"""
         <div id="paypal-button-container-suite" style="max-width: 350px; margin-top: 20px;"></div>
         <script src="https://paypal.com{PAYPAL_CLIENT_ID}&vault=true&intent=subscription" data-sdk-integration-source="button-factory"></script>
         <script>
           paypal.Buttons({{
-              style: {{
-                  shape: 'rect',
-                  color: 'gold',
-                  layout: 'vertical',
-                  label: 'subscribe'
-              }},
+              style: {{ shape: 'rect', color: 'gold', layout: 'vertical', label: 'subscribe' }},
               createSubscription: function(data, actions) {{
-                return actions.subscription.create({{
-                  'plan_id': '{PAYPAL_PLAN_ID}'
-                }});
+                return actions.subscription.create({{ 'plan_id': '{PAYPAL_PLAN_ID}' }});
               }},
               onApprove: function(data, actions) {{
-                // Cette alerte s'affiche dès que l'abonnement est validé avec succès
-                alert('Félicitations ! Abonnement PayPal validé avec succès. ID de transaction : ' + data.subscriptionID);
+                alert('Abonnement PayPal validé avec succès. ID : ' + data.subscriptionID);
               }}
           }}).render('#paypal-button-container-suite');
         </script>
@@ -86,14 +77,9 @@ if not st.session_state.est_abonne_global:
 # ------------------------------------------------------------------
 else:
     st.title("⚡ Bienvenue dans votre Espace Centralisé")
-    st.success("🔓 Vos accès globaux sont actifs. Utilisez la barre latérale qui vient d'apparaître à gauche pour basculer d'une application à une autre !")
+    st.success("🔓 Vos accès globaux sont actifs. La barre latérale vient d'apparaître à gauche ! Cliquez sur les applications pour basculer de l'une à l'autre.")
     
     st.write("---")
     if st.button("🚪 Se déconnecter de la plateforme", use_container_width=True):
         st.session_state.est_abonne_global = False
         st.rerun()
-
-
-
-
-
