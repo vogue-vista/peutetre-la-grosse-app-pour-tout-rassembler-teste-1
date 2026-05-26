@@ -70,10 +70,10 @@ if not st.session_state.est_abonne_global:
                 st.error("Identifiants incorrects ou abonnement inactif.")
 
 # ------------------------------------------------------------------
-# ÉCRAN DE BIENVENUE & BARRE LATÉRALE NATIVE ULTRA-STABLE (CONNECTÉ)
+# ÉCRAN DE BIENVENUE & BARRE LATÉRALE PROTÉGÉE (CONNECTÉ)
 # ------------------------------------------------------------------
 else:
-    # Bouton de déconnexion fixe dans le volet de gauche
+    # Bouton de déconnexion toujours visible à gauche
     with st.sidebar:
         st.title("🚀 Suite Pro 500$/mo")
         st.write("Connecté : admin@entreprise.com")
@@ -82,13 +82,13 @@ else:
             st.rerun()
         st.write("---")
 
-    # 🔑 CORRECTION SÉCURISÉE : Laisse Streamlit gérer la découverte des fichiers
-    # Cette syntaxe charge automatiquement TOUS les fichiers .py valides du dossier 'pages'
-    # sans risquer de planter sur les chemins sous Python 3.14.
+    # 🛡️ LE SYSTÈME ANTI-PLANTAGE GLOBAL :
+    # Si une mini-app contient une erreur, elle n'effacera plus la barre latérale.
     try:
         navigation_suite = st.navigation(st.sidebar) 
         navigation_suite.run()
     except Exception as e:
-        # Système de secours automatique si un fichier individuel comporte une erreur interne de code
-        st.error("💡 Une de vos mini-applications comporte une ligne de code incompatible (comme un ancien st.set_page_config).")
-        st.info("Vérifiez le fichier de script vidéo ou l'application sélectionnée pour retirer les configurations de page en trop.")
+        st.title("⚡ Suite IA Entreprise PRO")
+        st.error("⚠️ Streamlit a détecté un fichier incompatible dans votre dossier `pages`.")
+        st.info("La barre latérale est affichée à gauche. Cliquez sur une autre application pour l'ouvrir.")
+        st.warning(f"Détail technique de l'erreur : {str(e)}")
