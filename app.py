@@ -138,7 +138,6 @@ else:
         </style>
         """, unsafe_allow_html=True)
 
-            
         except Exception as e:
             st.title(f"❌ Erreur dans l'application : {choix_app}")
             st.error(f"Le fichier `{chemin_complet}` contient une erreur de code interne.")
