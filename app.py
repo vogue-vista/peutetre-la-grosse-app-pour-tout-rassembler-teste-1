@@ -7,13 +7,7 @@ st.set_page_config(page_title="Suite IA Entreprise PRO", page_icon="🚀", layou
 if "est_abonne_global" not in st.session_state:
     st.session_state.est_abonne_global = False
 
-# 🛠️ CORRECTION DU BUG DE SIDEBAR : Affichée ou masquée selon la connexion
-if not st.session_state.est_abonne_global:
-    st.markdown("<style>[data-testid='stSidebar'] {display: none !important;}</style>", unsafe_allow_html=True)
-else:
-    st.markdown("<style>[data-testid='stSidebar'] {display: flex !important;}</style>", unsafe_allow_html=True)
-
-# Design épuré en police Poppins
+# Design épuré en police Poppins (Le masquage de la sidebar a été supprimé 🔓)
 st.markdown("""
 <style>
 @import url('https://googleapis.com');
@@ -22,7 +16,7 @@ html, body, div, p, h1, h2, h3, h4, h5, h6, span, button { font-family: 'Poppins
 """, unsafe_allow_html=True)
 
 # ------------------------------------------------------------------
-# ZONE DE CONFIGURATION PAYPAL DEVELOPER (À CHANGER PLUS TARD)
+# ZONE DE CONFIGURATION PAYPAL DEVELOPER
 # ------------------------------------------------------------------
 PAYPAL_CLIENT_ID = "sandbox"  
 PAYPAL_PLAN_ID = "P-XXXXXXXXXX"  
@@ -77,9 +71,10 @@ if not st.session_state.est_abonne_global:
 # ------------------------------------------------------------------
 else:
     st.title("⚡ Bienvenue dans votre Espace Centralisé")
-    st.success("🔓 Vos accès globaux sont actifs. La barre latérale vient d'apparaître à gauche ! Cliquez sur les applications pour basculer de l'une à l'autre.")
+    st.success("🔓 Vos accès globaux sont actifs. Utilisez le menu à gauche pour naviguer librement entre vos 20 outils !")
     
     st.write("---")
     if st.button("🚪 Se déconnecter de la plateforme", use_container_width=True):
         st.session_state.est_abonne_global = False
         st.rerun()
+
