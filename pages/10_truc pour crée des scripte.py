@@ -12,17 +12,6 @@ if "est_abonne_global" not in st.session_state or not st.session_state.est_abonn
 # CONFIGURATION DE LA PAGE
 # -------------------------
 
-# Masquer la sidebar par défaut pour un look épuré
-st.markdown("""
-<style>
-[data-testid="stSidebar"] {display: none !important;}
-[data-testid="stSidebarNav"] {display: none !important;}
-@import url('https://googleapis.com');
-html, body, div, p, h1, h2, h3, h4, h5, h6, span {
-    font-family: 'Poppins', sans-serif !important;
-}
-</style>
-""", unsafe_allow_html=True)
 
 # -------------------------
 # CONFIGURATION PAYPAL (À REMPLIR PLUS TARD)
