@@ -104,7 +104,8 @@ else:
 
     # 3. Lancement de la navigation avec la liste dynamique
     if pages_trouvees:
-        navigation_suite = st.navigation(pages_found=pages_trouvees)
+        # 🔑 CORRECTION ICI : On passe directement la liste à st.navigation()
+        navigation_suite = st.navigation(pages_trouvees)
         navigation_suite.run()
     else:
         st.error("⚠️ Le dossier `pages` semble vide ou introuvable. Assurez-vous d'avoir des fichiers .py dedans.")
