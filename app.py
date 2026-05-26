@@ -56,19 +56,23 @@ if not st.session_state.est_abonne_global:
         """
         components.html(paypal_button_html, height=180, scrolling=False)
         
-    with col_connexion:
+      with col_connexion:
         st.subheader("🔑 Connexion Client Entreprise")
         st.write("Entrez vos identifiants pour débloquer votre accès.")
-        email = st.text_input("Adresse e-mail")
-        mot_de_passe = st.text_input("Mot de passe", type="password")
+        
+        # 🔑 L'AJOUT DES KEYS FORCE STREAMLIT À RETENIR LE TEXTE TAPE
+        email = st.text_input("Adresse e-mail", key="login_email")
+        mot_de_passe = st.text_input("Mot de passe", type="password", key="login_password")
         
         if st.button("Débloquer la Suite Pro", use_container_width=True):
-            if email == "admin@entreprise.com" and mot_de_passe == "suite500":
+            # Suppression des espaces invisibles avant ou après au cas où (avec .strip())
+            if email.strip() == "admin@entreprise.com" and mot_de_passe.strip() == "suite500":
                 st.session_state.est_abonne_global = True
                 st.success("Accès accordé !")
-                st.rerun()
+                st.rerun() # Recharge immédiatement la page pour afficher la barre latérale
             else:
                 st.error("Identifiants incorrects ou abonnement inactif.")
+
 
 # ------------------------------------------------------------------
 # ÉCRAN DE BIENVENUE & EXÉCUTION DES MINI APPS (CONNECTÉ)
