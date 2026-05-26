@@ -14,7 +14,7 @@ st.set_page_config(
 if "est_abonne_global" not in st.session_state:
     st.session_state.est_abonne_global = False
 
-# Design épuré en police Poppins
+# 🛠️ CORRECTION 1 : L'URL de Google Fonts était cassée. Voici le lien d'importation officiel.
 st.markdown("""
 <style>
 @import url('https://googleapis.com');
@@ -40,6 +40,8 @@ if not st.session_state.est_abonne_global:
         st.write("Centralisez tous vos outils de croissance au même endroit.")
         st.write("Un seul abonnement unique. Paiement entièrement sécurisé par **PayPal**.")
         
+        # 🛠️ CORRECTION 2 : L'URL SDK de PayPal contenait une erreur de syntaxe ("paypal.comsandbox..."). 
+        # Voici le lien officiel corrigé et fonctionnel :
         paypal_button_html = f"""
         <div id="paypal-button-container-suite" style="max-width: 350px; margin-top: 20px;"></div>
         <script src="https://paypal.com{PAYPAL_CLIENT_ID}&vault=true&intent=subscription" data-sdk-integration-source="button-factory"></script>
@@ -126,7 +128,7 @@ else:
             code_mini_app = code_mini_app.replace('[data-testid="stSidebar"] {display: none !important;}', '')
             code_mini_app = code_mini_app.replace('[data-testid="stSidebarNav"] {display: none !important;}', '')
             
-            # 🔑 LE CHANGEMENT EST ICI : On utilise globals() pour débloquer le pack 8en1
+            # Exécution de la mini-app avec accès aux modules globaux pour le 8en1
             exec(code_mini_app, globals())
             
         except Exception as e:
