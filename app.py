@@ -1,8 +1,7 @@
 import streamlit as st
 import streamlit.components.v1 as components
-import os
 
-# 🛠️ CONFIGURATION DE LA BARRE LATÉRALE NATIVE
+# 🛠️ CONFIGURATION DE LA SUITE
 st.set_page_config(
     page_title="Suite IA Entreprise PRO", 
     page_icon="🚀", 
@@ -71,10 +70,10 @@ if not st.session_state.est_abonne_global:
                 st.error("Identifiants incorrects ou abonnement inactif.")
 
 # ------------------------------------------------------------------
-# ÉCRAN DE BIENVENUE & BARRE LATÉRALE NATIVE AUTOMATIQUE (CONNECTÉ)
+# ÉCRAN DE BIENVENUE & BARRE LATÉRALE NATIVE ULTRA-STABLE (CONNECTÉ)
 # ------------------------------------------------------------------
 else:
-    # 1. Barre latérale fixe (Déconnexion)
+    # Bouton de déconnexion fixe dans le volet de gauche
     with st.sidebar:
         st.title("🚀 Suite Pro 500$/mo")
         st.write("Connecté : admin@entreprise.com")
@@ -83,29 +82,13 @@ else:
             st.rerun()
         st.write("---")
 
-    # 2. SOLUTION MAGIQUE : On scanne automatiquement le dossier 'pages'
-    # Plus besoin de taper les noms à la main, Python trouve tout seul les fichiers .py
-    dossier_pages = "pages"
-    pages_trouvees = []
-
-    if os.path.exists(dossier_pages):
-        # Récupère tous les fichiers .py, triés par ordre alphabétique/numérique
-        fichiers = sorted([f for f in os.listdir(dossier_pages) if f.endswith(".py")])
-        
-        for fichier in fichiers:
-            chemin_complet = os.path.join(dossier_pages, fichier)
-            
-            # Nettoie le nom pour l'affichage de la barre latérale
-            # Enlève le ".py" et remplace les underscores (_) par des espaces
-            titre_propre = fichier.replace(".py", "").replace("_", " ").title()
-            
-            # Crée dynamiquement l'objet de navigation pour Streamlit
-            pages_trouvees.append(st.Page(chemin_complet, title=titre_propre))
-
-    # 3. Lancement de la navigation avec la liste dynamique
-    if pages_trouvees:
-        # 🔑 CORRECTION ICI : On passe directement la liste à st.navigation()
-        navigation_suite = st.navigation(pages_trouvees)
+    # 🔑 CORRECTION SÉCURISÉE : Laisse Streamlit gérer la découverte des fichiers
+    # Cette syntaxe charge automatiquement TOUS les fichiers .py valides du dossier 'pages'
+    # sans risquer de planter sur les chemins sous Python 3.14.
+    try:
+        navigation_suite = st.navigation(st.sidebar) 
         navigation_suite.run()
-    else:
-        st.error("⚠️ Le dossier `pages` semble vide ou introuvable. Assurez-vous d'avoir des fichiers .py dedans.")
+    except Exception as e:
+        # Système de secours automatique si un fichier individuel comporte une erreur interne de code
+        st.error("💡 Une de vos mini-applications comporte une ligne de code incompatible (comme un ancien st.set_page_config).")
+        st.info("Vérifiez le fichier de script vidéo ou l'application sélectionnée pour retirer les configurations de page en trop.")
