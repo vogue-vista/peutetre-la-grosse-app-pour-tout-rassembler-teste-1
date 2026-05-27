@@ -22,10 +22,6 @@ html, body, div, p, h1, h2, h3, h4, h5, h6, span, button { font-family: 'Poppins
 </style>
 """, unsafe_allow_html=True)
 
-# CONFIGURATION PAYPAL
-PAYPAL_CLIENT_ID = "sandbox"  
-PAYPAL_PLAN_ID = "P-XXXXXXXXXX"  
-
 # ------------------------------------------------------------------
 # ÉCRAN DE VERROUILLAGE (L'UTILISATEUR N'A PAS PAYÉ)
 # ------------------------------------------------------------------
@@ -38,24 +34,30 @@ if not st.session_state.est_abonne_global:
     with col_offre:
         st.subheader("💎 Accès Illimité à nos 28 Applications pour 500 $/mois")
         st.write("Centralisez tous vos outils de croissance au même endroit.")
-        st.write("Un seul abonnement unique. Paiement entièrement sécurisé par **PayPal**.")
+        st.write("👉 **Formule Entreprise Pro :** Facturation mensuelle et paiement sécurisé par Virement Interac.")
         
-        paypal_button_html = f"""
-        <div id="paypal-button-container-suite" style="max-width: 350px; margin-top: 20px;"></div>
-        <script src="https://paypal.com{PAYPAL_CLIENT_ID}&vault=true&intent=subscription" data-sdk-integration-source="button-factory"></script>
-        <script>
-          paypal.Buttons({{
-              style: {{ shape: 'rect', color: 'gold', layout: 'vertical', label: 'subscribe' }},
-              createSubscription: function(data, actions) {{
-                return actions.subscription.create({{ 'plan_id': '{PAYPAL_PLAN_ID}' }});
-              }},
-              onApprove: function(data, actions) {{
-                alert('Abonnement PayPal validé avec succès. ID : ' + data.subscriptionID);
-              }}
-          }}).render('#paypal-button-container-suite');
-        </script>
-        """
-        components.html(paypal_button_html, height=180, scrolling=False)
+        st.write("---")
+        st.markdown("### 📢 Obtenir vos accès en 5 minutes :")
+        st.write("Pour abonner votre PME, veuillez remplir ce formulaire. Vous recevrez instantanément les instructions de virement par courriel.")
+        
+        # Formulaire d'inscription simple pour les entreprises
+        nom_pme = st.text_input("Nom de votre entreprise", key="reg_pme")
+        courriel_pme = st.text_input("Courriel professionnel de contact", key="reg_email")
+        
+        if st.button("🚀 Demander mes accès et recevoir la facture", use_container_width=True):
+            if nom_pme and courriel_pme:
+                st.success(f"✅ Demande enregistrée avec succès pour {nom_pme} !")
+                # Modifie l'adresse courriel ci-dessous par celle de ton choix pour le virement
+                st.info("""
+                📥 **Instructions envoyées !** 
+                
+                Pour activer vos identifiants immédiatement, veuillez effectuer votre virement de **500,00 $** à l'adresse suivante :
+                ➡️ **virement@votre-courriel.com**
+                
+                *Dès réception, vos codes d'accès 'admin@entreprise.com' seront activés à distance.*
+                """)
+            else:
+                st.error("⚠️ Veuillez remplir toutes les cases pour valider votre demande.")
         
     with col_connexion:
         st.subheader("🔑 Connexion Client Entreprise")
@@ -78,7 +80,7 @@ if not st.session_state.est_abonne_global:
 else:
     st.session_state.est_abonne = True
 
-    # 🔑 MASQUAGE DE SÉCURITÉ DE LA LISTE DU HAUT (Avant l'exécution)
+    # Masquage de sécurité de la liste du haut
     st.markdown("""
     <style>
     [data-testid="stSidebarNav"] { display: none !important; }
@@ -89,14 +91,14 @@ else:
     dossier_pages = "pages"
     fichiers_apps = {}
 
-    # Scan du dossier pour lister vos applications
+    # Scan du dossier pages
     if os.path.exists(dossier_pages):
         fichiers = sorted([f for f in os.listdir(dossier_pages) if f.endswith(".py")])
         for f in fichiers:
             nom_propre = f.replace(".py", "").replace("_", " ").title()
             fichiers_apps[nom_propre] = os.path.join(dossier_pages, f)
 
-    # Construction forcée de votre barre latérale manuelle
+    # Construction de la barre latérale manuelle
     with st.sidebar:
         st.title("🚀 Suite Pro 500$/mo")
         st.write("Connecté : admin@entreprise.com")
@@ -121,28 +123,21 @@ else:
             with open(chemin_complet, "r", encoding="utf-8") as file:
                 code_mini_app = file.read()
             
-            # Filtre automatique anti-masquage de la barre latérale pour vos fichiers
+            # Filtre automatique anti-masquage
             code_mini_app = code_mini_app.replace('display: none !important;', 'display: flex !important;')
             code_mini_app = code_mini_app.replace('[data-testid="stSidebar"] {display: none !important;}', '')
             
             # Exécution de la mini-app
             exec(code_mini_app, globals())
             
-            # 🔑 LE TRUC COMPLÉMENTAIRE EST ICI : On ré-injecte le masquage JUSTE APRÈS l'exécution
-            # De cette manière, même si la mini-app réinitialise l'affichage, la deuxième barre reste cachée.
-            st.markdown("""
-            <style>
-            [data-testid="stSidebarNav"] { display: none !important; }
-            </style>
-            """, unsafe_allow_html=True)
+            # Ré-injection du masquage de la barre du haut
+            st.markdown("<style>[data-testid='stSidebarNav'] { display: none !important; }</style>", unsafe_allow_html=True)
             
         except Exception as e:
             st.title(f"❌ Erreur dans l'application : {choix_app}")
             st.error(f"Le fichier `{chemin_complet}` contient une erreur de code interne.")
             st.warning(f"Détail technique : {str(e)}")
-            
-            # On s'assure de garder la barre cachée même en cas de message d'erreur
-            st.markdown("<style>[data-testid=\"stSidebarNav\"] { display: none !important; }</style>", unsafe_allow_html=True)
+            st.markdown("<style>[data-testid='stSidebarNav'] { display: none !important; }</style>", unsafe_allow_html=True)
     else:
         st.title("⚡ Bienvenue dans votre Suite IA Entreprise PRO")
         st.info("Aucun fichier détecté dans le dossier `pages`.")
