@@ -153,7 +153,7 @@ else:
                         temperature=0.6
                     )
                     
-                    faq_genere = reponse.choices.message.content
+                    faq_genere = reponse.choices[0].message.content
                     st.success("✨ Votre FAQ optimisée est prête !")
                     st.markdown(faq_genere)
                     st.text_area("Copier le bloc brut :", value=faq_genere, height=300)
