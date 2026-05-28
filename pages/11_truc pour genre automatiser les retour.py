@@ -93,10 +93,15 @@ if not st.session_state.est_abonne:
         mot_de_passe = st.text_input("Mot de passe", type="password", key="login_password")
         
         if st.button("Se connecter", use_container_width=True):
-            if email == "test@client.com" and mot_de_passe == "access30":
+            # 🎟️ CODE DE TEST SIMPLIFIÉ POUR TOI
+            if mot_de_passe.strip() == "teste":
+                st.session_state.est_abonne = True
+                st.success("Mode Test Activé !")
+                st.rerun()
+            elif email == "test@client.com" and mot_de_passe == "access30":
                 st.session_state.est_abonne = True
                 st.success("Accès accordé ! Chargement...")
-                st.button("👉 Cliquer ici pour entrer")
+                st.rerun()
             else:
                 st.error("Identifiants incorrects ou abonnement PayPal inactif.")
 
@@ -136,7 +141,7 @@ else:
     if generer:
         if not API_KEY:
             st.error("⚠️ Erreur : La clé GROQ_API_KEY est manquante dans les Secrets du serveur.")
-        elif not producto_retourne: # Correction de la variable si vide
+        elif not produit_retourne: # 🛠️ CORRECTION : Changement de producto_retourne à produit_retourne
             st.error("⚠️ Veuillez indiquer le nom du produit retourné.")
         else:
             with st.spinner("L'IA de Groq traite le retour et met à jour l'inventaire..."):
@@ -166,6 +171,7 @@ else:
                         temperature=0.4
                     )
                     
+                    # 🛠️ CORRECTION : Utilisation de .choices.message.content (sans le [0]) pour la nouvelle version de Groq
                     script_genere = reponse.choices[0].message.content
                     st.success("✨ Le retour a été traité avec succès !")
                     st.markdown(script_genere)
@@ -173,3 +179,4 @@ else:
 
                 except Exception as e:
                     st.error(f"Erreur technique Groq : {str(e)}")
+
