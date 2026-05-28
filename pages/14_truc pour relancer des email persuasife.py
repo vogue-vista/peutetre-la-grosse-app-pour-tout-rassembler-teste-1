@@ -164,7 +164,7 @@ else:
                         temperature=0.5
                     )
                     
-                    script_genere = reponse.choices.message.content
+                    script_genere = reponse.choices[0].message.content
                     st.success("✨ Votre séquence d'e-mails de relance est prête !")
                     st.markdown(script_genere)
                     st.text_area("Copier le contenu brut :", value=script_genere, height=200)
